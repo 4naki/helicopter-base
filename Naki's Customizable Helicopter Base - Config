@@ -1,0 +1,39 @@
+@name Naki's Customizable Helicopter Base - Config
+@persist HelicopterName:string [RotorPos TailRotorPos]:vector
+@persist [RotorFX EngineStartFX PowerSwitchFX WindFX]:string
+@persist RealRPM DefaultRPM MaxRPM RPMRaiseAmount RPMLowerAmount
+@persist PitchSpeed YawSpeed RollSpeed TurnSpeedMult VelDampingMult AngDampingMult
+@persist DefaultThrottle MaxThrottle MinThrottle
+
+if(first()){
+    
+    HelicopterName="Mil Mi-24 Hind"
+    
+    RotorPos = vec(-62.3,0,100)
+    TailRotorPos = vec(-473.25,15,124.25)
+    
+    RotorFX = "acf_extra/airfx/milrotors.wav"
+    EngineStartFX = "acf_extra/airfx/satellite_target.wav"
+    PowerSwitchFX = "buttons/lever7.wav"
+    WindFX = "acf_extra/vehiclefx/misc/windexternal.wav"
+    
+    RealRPM = 240
+    DefaultRPM = 70
+    MaxRPM = 99
+    
+    RPMRaiseAmount = 0.4
+    RPMLowerAmount = 0.3
+    
+    PitchSpeed = 45
+    YawSpeed = 45
+    RollSpeed = 45
+    
+    TurnSpeedMult = 1
+    VelDampingMult = 1
+    AngDampingMult = 1
+    
+    DefaultThrottle = 70
+    MaxThrottle = 100
+    MinThrottle = 50
+    
+}
