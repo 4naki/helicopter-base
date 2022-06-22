@@ -3,6 +3,49 @@
 @outputs Throttle JoyX JoyY Power RPMOut RotorBrake
 @persist Throttle Active Power Val Val2 RPM RotorBrake AH
 
+#ifdef httpRequest(string)
+@persist [Version Link]:string Block
+#endif
+
+if(first()){
+    #ifdef httpRequest(string)
+        Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
+        VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
+        Version = "1.0"
+        
+        runOnHTTP(1)
+        if(Link!=""){
+        }else{
+            Block=1
+        }
+        if(VersionCheckLink!=""){
+            httpRequest(VersionCheckLink)
+        }else{
+            Block=1
+        }
+    #else
+        print("HTTP Core Not Found!")
+    #endif
+}
+#ifdef httpRequest(string)
+    if(httpClk()){
+        if(httpSuccess()&!Block){
+            ReturnData=httpUrlDecode(httpData())
+            
+            print("["+entity():getName()+"]")
+            
+            if(Version:toNumber()!=ReturnData:toNumber()){
+                print("Update available! Running version: "+Version)
+                print("Latest version: "+ReturnData)
+                print("Link: "+Link)
+            }else{
+                print("Up to date! Running version: "+Version)
+            }
+        }
+    }
+#endif
+
+
 interval(50)
 if(first()){
     
@@ -21,12 +64,11 @@ if(first()){
         
         Pre setup:
         
-        Save 2 files from my github repository "This code" linked above
+        Save 1 file from my github repository "This code" linked above
         
-        1. Helicopter Base - Config
-        2. Helicopter Base - Version Check
+        "Helicopter Base - Config"
         
-        Both of these need to be on your local drive, in a folder "garry's mod/garry's mod/data/expression2"
+        This needs to be on your local drive, in a folder "garry's mod/garry's mod/data/expression2"
         
         You can just copy the code into this editor and save it through here.
         
@@ -83,12 +125,6 @@ if(first()){
     
     #[-- Config -- ]#
     #include "Naki's_Customizable_Helicopter_Base_-_Config"
-    
-    
-    #[-- Version Check -- ]#
-    #This contains a version check code which returns my github link in case your version of the e2 is outdated
-    #include "version-check"
-    
     
     #-- Code starts here
     
