@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.1"
+        Version = "1.2"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -309,7 +309,7 @@ if(!MouseAim){
         Ang=(Autohover+Recover)*100
     }
 }else{
-    Tilt=ang(0,0,JoyY*0.75)+CamAng*ang(1,1,0)
+    Tilt=ang(0,0,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,1,0))*ang(1,1,0))
     Ang=Tilt*500
 }
 
@@ -396,4 +396,3 @@ RPMOut=RealRPM*(RPM/100)
 if(dupefinished()){
     reset()
 }
-
