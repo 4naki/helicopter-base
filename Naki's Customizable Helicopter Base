@@ -1,0 +1,311 @@
+@name Naki's Customizable Helicopter Base
+@inputs [Base Seat Rotor TailRotor]:entity
+@outputs Throttle JoyX JoyY Power RPMOut RotorBrake
+@persist Throttle Active Power Val Val2 RPM RotorBrake AH
+
+interval(50)
+if(first()){
+    
+    #[ -- Setup and Controls --
+        
+        Naki's Customizable Helicopter Base
+        
+        Github (My profile): https://github.com/4naki
+        Github (This code): https://github.com/4naki/helicopter-base/tree/main
+        
+        Steam (Can change): https://steamcommunity.com/id/Nakkivatti/
+        Steam (Permanent, ID): http://steamcommunity.com/profiles/76561198255904264
+        
+        Youtube: https://www.youtube.com/channel/UCz7XiAeqo4WPyNljkKe-UJQ
+        
+        
+        Setup:
+        
+        1. Spawn a base plate you like, highly recommend using SProps plates
+        
+        2. Spawn a seat and 2 props, 1 each rotor, recommend using SProps blocks
+        
+        3. Place this e2 onto the base plate, doesn't matter where or which way the e2 points,
+        just make sure the front of the base plate faces forwards, you can check this using stacker tool
+        
+        4. Wire "Base" to the base plate, "Seat" to your seat, "Rotor" to your rotor prop and "TailRotor" to your tail rotor prop
+        
+        5. Multiparent your model to the base plate with these settings
+        
+        Multiparent settings:
+        
+        Remove Constraints: Optional
+        No Collide: Uncheck
+        Weld: Uncheck
+        
+        Disable Collisions: Check
+        Set Weight: Check
+        Disable Shadows: Check
+        
+        (Top 3 unchecked, bottom 3 checked)
+        
+        6. You can reload your e2, in case you used Prop2Mesh/P2M respawn your whole build with the stuff you have now parented,
+        note you can multiparent your rotor models to the rotor props
+        
+        7. Done
+        
+        
+        Controls: 
+        
+        WASD - Tilt
+        Mouse1 and Mouse2 - Yaw
+        Shift - Go down/descend
+        Space - Go up/ascend
+        R - Toggle engine
+        F - Toggle Auto Hover
+        Alt - Toggle Rotor Brake (Slows down the rotors when you turn off the engine,
+        otherwise you can turn off your engine in air and stay in air for a while, test it)
+        
+        In case you want to change any of these buttons, lines 114 to 127
+        
+        
+        Options/Settings are in the "config" file listed below
+    ]#
+    
+    #[-- Config -- ]#
+    #include "Naki's_Customizable_Helicopter_Base_-_Config"
+    
+    
+    #[-- Version Check -- ]#
+    #This contains a version check code which returns my github link in case your version of the e2 is outdated
+    #include "version-check"
+    
+    
+    #-- Code starts here
+    
+    setName(HelicopterName)
+    
+    Base:setMass(300)
+    
+    Base:propDrag(0)
+    Base:propInertia(vec(0,0,0))
+    
+    holoCreate(1,Rotor:toWorld(vec(0,0,0)),vec(0),Rotor:toWorld(ang(0,0,0)),vec(255),"cube")
+    local Children=Rotor:children()
+    Rotor:parentTo(holoEntity(1))
+    holoPos(1,Base:toWorld(RotorPos))
+    holoAng(1,Base:toWorld(ang(15,0,0)))
+    holoParent(1,Base)
+    for(I=1,Children:count()){
+        Children[I,entity]:parentTo(Rotor)
+    }
+    
+    holoCreate(5)
+    holoPos(5,Base:toWorld(TailRotorPos))
+    holoAng(5,Base:toWorld(ang(0,0,0)))
+    holoParent(5,Base)
+    holoAlpha(5,0)
+    
+    holoCreate(2,TailRotor:toWorld(vec(0,0,0)),vec(0),TailRotor:toWorld(ang(0,0,0)),vec(255),"cube")
+    local Children=TailRotor:children()
+    TailRotor:parentTo(holoEntity(2))
+    holoPos(2,Base:toWorld(TailRotorPos))
+    holoAng(2,holoEntity(5):toWorld(ang(0,0,0)))
+    holoParent(2,Base)
+    for(I=2,Children:count()){
+        Children[I,entity]:parentTo(TailRotor)
+    }
+    
+    holoCreate(3)
+    holoPos(3,Seat:toWorld(vec(0,25,15)))
+    holoAng(3,Base:angles())
+    holoParent(3,Base)
+    holoAlpha(3,0)
+    holoScale(3,vec(0.5))
+    
+    holoCreate(4)
+    holoPos(4,Seat:toWorld(vec(0,25,25)))
+    holoAng(4,Base:angles())
+    holoParent(4,Base)
+    holoAlpha(4,0)
+    holoScale(4,vec(0.5))
+}
+Pilot=Seat:driver()
+
+
+#-- Buttons/Controls
+
+OutputZ=-(Pilot:keySprint()-Pilot:keyJump())*Active
+OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
+OutputY=((Pilot:keyRight()-Pilot:keyLeft())*25)*Active
+
+FirePrimary=Pilot:keyAttack1()*Active
+FireSecondary=Pilot:keyAttack2()*Active
+
+Start=Pilot:keyReload()
+RotorBrakeButton=Pilot:keyWalk()
+AutoHoverButton=Pilot:keyPressed("f")
+
+#-- Code continues
+
+
+if(changed(Pilot)){
+    if(Pilot){
+        Active=1
+    }else{
+        Active=0
+    }
+}
+
+if(changed(Start)&Start){
+    Power=!Power
+}
+if(changed(AutoHoverButton)&AutoHoverButton){
+    AH=!AH
+}
+if(changed(RotorBrakeButton)&RotorBrakeButton){
+    RotorBrake=!RotorBrake
+}
+if(abs(OutputX)>2){
+    if(OutputX<45){
+        if(OutputX>-45){
+            JoyX=OutputX
+        }else{
+            JoyX=-PitchSpeed
+        }
+    }else{
+        JoyX=PitchSpeed
+    }
+}else{
+    JoyX=0
+}
+if(abs(OutputY)>2){
+    if(OutputY<45){
+        if(OutputY>-45){
+            JoyY=OutputY
+        }else{
+            JoyY=-RollSpeed
+        }
+    }else{
+        JoyY=RollSpeed
+    }
+}else{
+    JoyY=0
+}
+
+if(abs(OutputZ)>0.1){
+    if(OutputZ>0){
+        JoyZ=MaxThrottle
+    }elseif(OutputZ<0){
+        JoyZ=MinThrottle
+    }
+}else{
+    JoyZ=DefaultThrottle
+}
+
+Throttle=JoyZ
+
+if(Pilot:keyAttack1()){
+    Yaw=YawSpeed
+}elseif(Pilot:keyAttack2()){
+    Yaw=-YawSpeed
+}else{
+    Yaw=0
+}
+
+Autohover=-ang(Base:angles():pitch(),0,Base:angles():roll())*AH
+
+XVel=clamp(Base:velL():x()*0.65,-55,55)
+YVel=clamp(Base:velL():y()*0.65,-55,55)
+
+XVel2=XVel*(abs(XVel*0.65)>10)
+YVel2=YVel*(abs(YVel*0.65)>10)
+
+Recover=(ang(-XVel2,0,YVel2*2)*0.2)*AH
+Tilt=ang(0+JoyX*1,Yaw*2,JoyY*1)*2
+
+if(JoyX!=0|JoyY!=0|Yaw!=0){
+    Ang=(Autohover+Tilt)*125
+}else{
+    Ang=(Autohover+Recover)*100
+}
+
+Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.1)*VelDampingMult
+Damping2=(Base:angVel()*ang(125,200,125)*2)*AngDampingMult
+
+Vel=(Base:velL()/5)
+if(Vel:x()<45){
+    if(Vel:x()>-45){
+        BaseX=Vel:x()
+    }else{
+        BaseX=-45
+    }
+}else{
+    BaseX=45
+}
+if(Vel:y()<45){
+    if(Vel:y()>-45){
+        BaseY=Vel:y()
+    }else{
+        BaseY=-45
+    }
+}else{
+    BaseY=45
+}
+
+AutoStop=(ang(-BaseX,0,BaseY)/25)*AH
+Tilt2=ang(JoyX,0,JoyY/15)*0.35
+ThrottleMult=0.5+(Throttle/95)
+
+holoAng(3,Base:toWorld((AutoStop+Tilt2)*ThrottleMult))
+holoAng(4,Base:toWorld((ang(JoyX,0,JoyY)*0.1)))
+
+Base:applyForce(((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*52))
+Base:applyAngForce(((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))
+
+if(changed(Power)){
+    if(Power){
+        Base:soundPlay("rotor",0,RotorFX)
+        Base:soundPlay("power",0,"acf_extra/airfx/satellite_target.wav")
+        Base:soundPlay("switch",0,"buttons/lever7.wav")
+        Base:soundPlay("wind",0,"acf_extra/vehiclefx/misc/windexternal.wav")
+    }else{
+        
+    }
+}
+soundPitch("rotor",25+(RPM/100)*95)
+soundVolume("rotor",0+RPM/100)
+
+soundPitch("wind",25+(RPM/100)*100)
+soundVolume("wind",(RPM/100)*0.2)
+if(Power){
+    if(RPM<DefaultRPM){
+        RPM+=RPMRaiseAmount
+    }
+    if(Throttle){
+        if((-25+Throttle)/150>0){
+            if(RPM<MaxRPM){
+                RPM+=(-25+Throttle)/150
+            }
+        }else{
+            RPM+=(-25+Throttle)/150
+        }
+    }else{
+        if(RPM>DefaultRPM){
+            RPM-=RPMLowerAmount
+        }
+    }
+}else{
+    if(RPM>0){
+        RPM-=0.1+((RPMLowerAmount-0.1)*RotorBrake)
+    }
+    if(RPM<0){
+        RPM=0
+    }
+}
+Val+=RPM
+Val2+=RPM/(1.8+((Pilot:keyAttack1()-Pilot:keyAttack2())*0.75))
+holoAng(1,holoEntity(4):toWorld(ang(0,Val,0)))
+holoAng(2,holoEntity(5):toWorld(ang(Val2,0,0)))
+
+RPMOut=RealRPM*(RPM/100)
+
+if(dupefinished()){
+    reset()
+}
+
