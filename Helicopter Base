@@ -1,7 +1,7 @@
 @name Naki's Customizable Helicopter Base
-@inputs [Base Seat Rotor TailRotor]:entity
-@outputs Throttle JoyX JoyY Power RPMOut RotorBrake
-@persist Throttle Active Power Val Val2 RPM RotorBrake AH
+@inputs [Base Seat Rotor TailRotor]:entity CamAng:angle
+@outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity
+@persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity
 
 #ifdef httpRequest(string)
 @persist [Version Link]:string Block
@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.0"
+        Version = "1.1"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -121,6 +121,25 @@ if(first()){
         
         
         Options/Settings are in the "config" file listed below
+        
+        
+        Optional CamController + AimControls
+        
+        Spawn a pod controller with settings specified below and a pod controller
+        
+        CamController Options:
+        
+        Coordinates local to parent: Check
+        Client side movement: Check
+        Draw player: uncheck
+        
+        rest are optional.
+        
+        Wire "Active" from cam controller to pod controller "Active"
+        Wire "CamPos" from cam controller to this E2's "CamPos"
+        Wire "Distance" from cam controller to this E2's "CamDistance"
+        Wire "Parent" from cam controller to this E2's "CamParent"
+        
     ]#
     
     #[-- Config -- ]#
@@ -181,18 +200,31 @@ Pilot=Seat:driver()
 #-- Buttons/Controls
 
 OutputZ=-(Pilot:keySprint()-Pilot:keyJump())*Active
-OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
-OutputY=((Pilot:keyRight()-Pilot:keyLeft())*25)*Active
 
+if(!MouseAim){
+OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
 FirePrimary=Pilot:keyAttack1()*Active
 FireSecondary=Pilot:keyAttack2()*Active
-
+}else{
+    
+}
+OutputY=((Pilot:keyRight()-Pilot:keyLeft())*25)*Active
+ThirdPersonButton=Pilot:keyDuck()*Active
 Start=Pilot:keyReload()
 RotorBrakeButton=Pilot:keyWalk()
 AutoHoverButton=Pilot:keyPressed("f")
 
 #-- Code continues
 
+if(TP){
+    CamPos=CamPosTP
+    CamDistance=CamDistanceTP
+    CamParent=Base
+}else{
+    CamPos=CamPosFP
+    CamDistance=CamDistanceFP
+    CamParent=Seat
+}
 
 if(changed(Pilot)){
     if(Pilot){
@@ -201,7 +233,9 @@ if(changed(Pilot)){
         Active=0
     }
 }
-
+if(changed(ThirdPersonButton)&ThirdPersonButton){
+    TP=!TP
+}
 if(changed(Start)&Start){
     Power=!Power
 }
@@ -266,13 +300,17 @@ YVel=clamp(Base:velL():y()*0.65,-55,55)
 XVel2=XVel*(abs(XVel*0.65)>10)
 YVel2=YVel*(abs(YVel*0.65)>10)
 
-Recover=(ang(-XVel2,0,YVel2*2)*0.2)*AH
-Tilt=ang(0+JoyX*1,Yaw*2,JoyY*1)*2
-
-if(JoyX!=0|JoyY!=0|Yaw!=0){
-    Ang=(Autohover+Tilt)*125
+if(!MouseAim){
+    Recover=(ang(-XVel2,0,YVel2*2)*0.2)*AH
+    Tilt=ang(0+JoyX*1,Yaw*2,JoyY*1)*2
+    if(JoyX!=0|JoyY!=0|Yaw!=0){
+        Ang=(Autohover+Tilt)*125
+    }else{
+        Ang=(Autohover+Recover)*100
+    }
 }else{
-    Ang=(Autohover+Recover)*100
+    Tilt=ang(0,0,JoyY*0.75)+CamAng*ang(1,1,0)
+    Ang=Tilt*500
 }
 
 Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.1)*VelDampingMult
