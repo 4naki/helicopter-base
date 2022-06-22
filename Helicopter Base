@@ -198,17 +198,16 @@ Pilot=Seat:driver()
 
 
 #-- Buttons/Controls
-
-OutputZ=-(Pilot:keySprint()-Pilot:keyJump())*Active
-
 if(!MouseAim){
-OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
 FirePrimary=Pilot:keyAttack1()*Active
 FireSecondary=Pilot:keyAttack2()*Active
 }else{
     
 }
+OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
 OutputY=((Pilot:keyRight()-Pilot:keyLeft())*25)*Active
+OutputZ=-(Pilot:keySprint()-Pilot:keyJump())*Active
+
 ThirdPersonButton=Pilot:keyDuck()*Active
 Start=Pilot:keyReload()
 RotorBrakeButton=Pilot:keyWalk()
@@ -309,7 +308,7 @@ if(!MouseAim){
         Ang=(Autohover+Recover)*100
     }
 }else{
-    Tilt=ang(0,0,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,1,0))*ang(1,1,0))
+    Tilt=ang(0+JoyX*0.375,0,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,1,0))*ang(1,1,0))
     Ang=Tilt*500
 }
 
