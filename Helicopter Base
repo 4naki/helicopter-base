@@ -1,6 +1,6 @@
 @name Naki's Customizable Helicopter Base
 @inputs [Base Seat Rotor TailRotor]:entity CamAng:angle
-@outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity
+@outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
 @persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity
 
 #ifdef httpRequest(string)
@@ -308,8 +308,8 @@ if(!MouseAim){
         Ang=(Autohover+Recover)*100
     }
 }else{
-    Tilt=ang(0+JoyX*0.375,0,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,1,0))*ang(1,1,0))
-    Ang=Tilt*500
+    Tilt=ang(0+JoyX*0.375,0,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,Power&Active,0))*ang(1,Power&Active,0))
+    Ang=((Autohover*ang(0,0,1))+Tilt)*500
 }
 
 Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.1)*VelDampingMult
