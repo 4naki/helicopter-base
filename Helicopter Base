@@ -19,6 +19,20 @@ if(first()){
         Youtube: https://www.youtube.com/channel/UCz7XiAeqo4WPyNljkKe-UJQ
         
         
+        Pre setup:
+        
+        Save 2 files from my github repository "This code" linked above
+        
+        1. Helicopter Base - Config
+        2. Helicopter Base - Version Check
+        
+        Both of these need to be on your local drive, in a folder "garry's mod/garry's mod/data/expression2"
+        
+        You can just copy the code into this editor and save it through here.
+        
+        Ignore "version" that's what my version check code checks
+        
+        
         Setup:
         
         1. Spawn a base plate you like, highly recommend using SProps plates
