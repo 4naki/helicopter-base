@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.5"
+        Version = "1.6"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -202,6 +202,16 @@ Pilot=Seat:driver()
 
 
 #-- Buttons/Controls
+MouseAimButton=Pilot:keyPressed("g")*Active
+
+if(changed(MouseAimButton)&MouseAimButton){
+    MouseAim=!MouseAim
+    if(MouseAim){
+        Seat:hintDriver("Mouse Controls: On",7)
+    }else{
+        Seat:hintDriver("Mouse Controls: Off",7)
+    }
+}
 if(!MouseAim){
 FirePrimary=Pilot:keyAttack1()*Active
 FireSecondary=Pilot:keyAttack2()*Active
@@ -241,12 +251,27 @@ if(changed(ThirdPersonButton)&ThirdPersonButton){
 }
 if(changed(Start)&Start){
     Power=!Power
+    if(Power){
+        Seat:hintDriver("Power: On",7)
+    }else{
+        Seat:hintDriver("Power: Off",7)
+    }
 }
 if(changed(AutoHoverButton)&AutoHoverButton){
     AH=!AH
+    if(AH){
+        Seat:hintDriver("Auto Hover: On",7)
+    }else{
+        Seat:hintDriver("Auto Hover: Off",7)
+    }
 }
 if(changed(RotorBrakeButton)&RotorBrakeButton){
     RotorBrake=!RotorBrake
+    if(RotorBrake){
+        Seat:hintDriver("Rotor Brake: On",7)
+    }else{
+        Seat:hintDriver("Rotor Brake: Off",7)
+    }
 }
 if(abs(OutputX)>2){
     if(OutputX<45){
@@ -348,7 +373,15 @@ holoAng(4,Base:toWorld((ang(JoyX,0,JoyY)*0.1)))
 
 Base:applyForce(((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))
 Base:applyAngForce(((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))
-LandingPad:setMass(150*((100-RPM)/100))
+if(!Power){
+    if(RotorBrake){
+        LandingPad:setMass(150)
+    }else{
+        LandingPad:setMass(150*((100-RPM)/100))
+    }
+}else{
+    LandingPad:setMass(150*((100-RPM)/100))
+}
 if(changed(Power)){
     if(Power){
         Base:soundPlay("rotor",0,RotorFX)
