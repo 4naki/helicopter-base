@@ -1,5 +1,5 @@
 @name Naki's Customizable Helicopter Base
-@inputs [Base Seat Rotor TailRotor]:entity CamAng:angle
+@inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
 @outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
 @persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity
 @trigger none
@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.4"
+        Version = "1.5"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -150,9 +150,13 @@ if(first()){
     setName(HelicopterName)
     
     Base:setMass(300)
+    LandingPad:setMass(150)
     
     Base:propDrag(0)
     Base:propInertia(vec(0,0,0))
+    
+    LandingPad:propDrag(0)
+    LandingPad:propInertia(vec(0,0,0))
     
     holoCreate(1,Rotor:toWorld(vec(0,0,0)),vec(0),Rotor:toWorld(ang(0,0,0)),vec(255),"cube")
     local Children=Rotor:children()
@@ -336,7 +340,7 @@ if(Vel:y()<45){
 }
 
 AutoStop=(ang(-BaseX,0,BaseY)/25)*AH
-Tilt2=ang(JoyX,0,JoyY/15)*0.35
+Tilt2=ang(JoyX+TiltOffset,0,JoyY/15)*0.35
 ThrottleMult=0.5+(Throttle/95)
 
 holoAng(3,Base:toWorld((AutoStop+Tilt2)*ThrottleMult))
@@ -344,7 +348,7 @@ holoAng(4,Base:toWorld((ang(JoyX,0,JoyY)*0.1)))
 
 Base:applyForce(((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))
 Base:applyAngForce(((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))
-
+LandingPad:setMass(150*((100-RPM)/100))
 if(changed(Power)){
     if(Power){
         Base:soundPlay("rotor",0,RotorFX)
