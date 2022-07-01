@@ -114,6 +114,7 @@ if(first()){
         Space - Go up/ascend
         R - Toggle engine
         F - Toggle Auto Hover
+        G - Toggle Aim controls
         Alt - Toggle Rotor Brake (Slows down the rotors when you turn off the engine,
         otherwise you can turn off your engine in air and stay in air for a while, test it)
         
@@ -123,7 +124,7 @@ if(first()){
         Options/Settings are in the "config" file listed below
         
         
-        Optional CamController + AimControls
+        Cam Controller Settings
         
         Spawn a pod controller with settings specified below and a pod controller
         
