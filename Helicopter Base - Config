@@ -1,4 +1,4 @@
-@name Naki's Customizable Helicopter Base - Config
+@name Bell UH-1 Huey Config
 @persist [Seat Base]:entity HelicopterName:string [RotorPos TailRotorPos]:vector AssistLift
 @persist [RotorFX EngineStartFX PowerSwitchFX WindFX]:string
 @persist RealRPM DefaultRPM MaxRPM RPMRaiseAmount RPMLowerAmount
@@ -41,11 +41,8 @@ if(first()){
     MaxThrottle = 100
     MinThrottle = 50
     
-    
-    MouseAim = 0
     CamPosFP = vec(0,-2,40)
     CamPosTP = vec(-62.3,0,125)
     CamDistanceFP = 0
     CamDistanceTP = 550
 }
-
