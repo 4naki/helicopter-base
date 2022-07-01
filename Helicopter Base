@@ -1,12 +1,12 @@
 @name Naki's Customizable Helicopter Base
 @inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
 @outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
-@persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity
+@persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60
 @trigger none
 #ifdef httpRequest(string)
 @persist [Version Link]:string Block
 #endif
-
+runOnChat(1)
 if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
@@ -45,6 +45,17 @@ if(first()){
     }
 #endif
 
+LS = owner():lastSaid():explode(" ")
+
+if(changed(LS[1,string])&LS[1,string]=="!60"){
+    hideChat(1)
+    TPS60=1
+    hint("TPS set to 60",7)
+}elseif(changed(LS[1,string])&LS[1,string]=="!30"){
+    hideChat(1)
+    TPS60=0
+    hint("TPS set to 30",7)
+}
 
 interval(50)
 if(first()){
@@ -141,6 +152,12 @@ if(first()){
         Wire "Distance" from cam controller to this E2's "CamDistance"
         Wire "Parent" from cam controller to this E2's "CamParent"
         
+        Chat commands:
+        
+        Experimental!
+        
+        !60 - Used for TPS value of 60, higher value means the e2 will run "faster" but this also means stuff like applyforce is twice as strong
+        !30 - Used for TPS value of 30, higher value means the e2 will run "faster" but this also means stuff like applyforce is twice as strong
     ]#
     
     #[-- Config -- ]#
@@ -372,8 +389,8 @@ ThrottleMult=0.5+(Throttle/95)
 holoAng(3,Base:toWorld((AutoStop+Tilt2)*ThrottleMult))
 holoAng(4,Base:toWorld((ang(JoyX,0,JoyY)*0.1)))
 
-Base:applyForce(((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))
-Base:applyAngForce(((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))
+Base:applyForce((((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))/(1+TPS60))
+Base:applyAngForce((((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))/(1+TPS60))
 if(!Power){
     if(RotorBrake){
         LandingPad:setMass(150)
