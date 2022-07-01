@@ -2,7 +2,7 @@
 @inputs [Base Seat Rotor TailRotor]:entity CamAng:angle
 @outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
 @persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity
-
+@trigger none
 #ifdef httpRequest(string)
 @persist [Version Link]:string Block
 #endif
@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.3"
+        Version = "1.4"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -143,7 +143,7 @@ if(first()){
     ]#
     
     #[-- Config -- ]#
-    #include "Naki's_Customizable_Helicopter_Base_-_Config"
+    #include "Bell_UH-1_Huey_Config"
     
     #-- Code starts here
     
@@ -342,7 +342,7 @@ ThrottleMult=0.5+(Throttle/95)
 holoAng(3,Base:toWorld((AutoStop+Tilt2)*ThrottleMult))
 holoAng(4,Base:toWorld((ang(JoyX,0,JoyY)*0.1)))
 
-Base:applyForce(((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*52))
+Base:applyForce(((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))
 Base:applyAngForce(((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))
 
 if(changed(Power)){
