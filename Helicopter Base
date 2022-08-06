@@ -230,11 +230,10 @@ if(changed(MouseAimButton)&MouseAimButton){
     }
 }
 if(!MouseAim){
+}else{
+}
 FirePrimary=Pilot:keyAttack1()*Active
 FireSecondary=Pilot:keyAttack2()*Active
-}else{
-    
-}
 OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
 OutputY=((Pilot:keyRight()-Pilot:keyLeft())*25)*Active
 OutputZ=-(Pilot:keySprint()-Pilot:keyJump())*Active
@@ -329,9 +328,9 @@ if(abs(OutputZ)>0.1){
 
 Throttle=JoyZ
 
-if(Pilot:keyAttack1()){
+if(FirePrimary){
     Yaw=YawSpeed
-}elseif(Pilot:keyAttack2()){
+}elseif(FireSecondary){
     Yaw=-YawSpeed
 }else{
     Yaw=0
@@ -354,7 +353,7 @@ if(!MouseAim){
         Ang=(Autohover+Recover)*100
     }
 }else{
-    Tilt=ang(0+JoyX*0.375,0,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,Power&Active,0))*ang(1,Power&Active,0))
+    Tilt=ang(0+JoyX*0.375,Yaw*1,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,Power&Active,0))*ang(1,Power&Active,0))
     Ang=((Autohover*ang(0,0,1))+Tilt)*500
 }
 
