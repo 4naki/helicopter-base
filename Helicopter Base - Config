@@ -26,8 +26,8 @@ if(first()){
     RPMLowerAmount = 0.3
     
     PitchSpeed = 32
-    YawSpeed = 35
-    RollSpeed = 3
+    YawSpeed = 30
+    RollSpeed = 2
     
     TiltOffset = 6
     
@@ -35,7 +35,7 @@ if(first()){
     
     TurnSpeedMult = 0.45
     VelDampingMult = 1
-    AngDamping = ang(40,35,25)
+    AngDamping = ang(40,30,15)
     AngDampingMult = 1
     
     DefaultThrottle = 70
