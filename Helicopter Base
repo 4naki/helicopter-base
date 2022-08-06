@@ -1,17 +1,17 @@
 @name Naki's Customizable Helicopter Base
 @inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
-@outputs Throttle JoyX JoyY Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
+@outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
 @persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60
 @trigger none
 #ifdef httpRequest(string)
 @persist [Version Link]:string Block
 #endif
-runOnChat(1)
+#runOnChat(1)
 if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.7"
+        Version = "1.8"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -161,7 +161,7 @@ if(first()){
     ]#
     
     #[-- Config -- ]#
-    #include "Bell_UH-1_Huey_Config"
+    #include "Naki's_Mini_Copter_Config"
     
     #-- Code starts here
     
@@ -217,7 +217,6 @@ if(first()){
     holoScale(4,vec(0.5))
 }
 Pilot=Seat:driver()
-
 
 #-- Buttons/Controls
 MouseAimButton=Pilot:keyPressed("g")*Active
@@ -360,7 +359,7 @@ if(!MouseAim){
 }
 
 Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.1)*VelDampingMult
-Damping2=(Base:angVel()*ang(125,200,125)*2)*AngDampingMult
+Damping2=(Base:angVel()*AngDamping*2)*AngDampingMult
 
 Vel=(Base:velL()/5)
 if(Vel:x()<45){
