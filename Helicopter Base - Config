@@ -37,7 +37,7 @@ if(first()){
     
     TurnSpeedMult = 1
     VelDampingMult = 1
-    AngDamping = ang(45,60,40)
+    AngDamping = ang(45,75,40)
     AngDampingMult = 2
     
     DefaultThrottle = 70
