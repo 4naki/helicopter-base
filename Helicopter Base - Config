@@ -1,5 +1,5 @@
-@name Naki's Mini Copter Config
-@persist [Seat Base]:entity HelicopterName:string [RotorPos TailRotorPos]:vector AssistLift TiltOffset
+@name Bell UH-1 Huey Config
+@persist [Seat Base]:entity HelicopterName:string [RotorPos TailRotorPos]:vector AssistLift TiltOffset BaseWeight
 @persist [RotorFX EngineStartFX PowerSwitchFX WindFX]:string
 @persist RealRPM DefaultRPM MaxRPM RPMRaiseAmount RPMLowerAmount
 @persist PitchSpeed YawSpeed RollSpeed TurnSpeedMult VelDampingMult AngDamping:angle AngDampingMult
@@ -8,15 +8,17 @@
 
 if(first()){
     
-    HelicopterName="Naki's Mini Copter"
+    HelicopterName="Bell UH-1 Huey"
     
-    RotorPos = vec(-15,0,45)
-    TailRotorPos = vec(-125,0,40)
+    RotorPos = vec(-30,0,70)
+    TailRotorPos = vec(-357,10,107)
     
     RotorFX = "acf_extra/airfx/hueyrotors.wav"
     EngineStartFX = "acf_extra/airfx/satellite_target.wav"
     PowerSwitchFX = "buttons/lever7.wav"
     WindFX = "acf_extra/vehiclefx/misc/windexternal.wav"
+    
+    BaseWeight = 500
     
     RealRPM = 324
     DefaultRPM = 70
@@ -25,25 +27,27 @@ if(first()){
     RPMRaiseAmount = 0.4
     RPMLowerAmount = 0.3
     
-    PitchSpeed = 32
-    YawSpeed = 30
-    RollSpeed = 2
+    PitchSpeed = 45
+    YawSpeed = 40
+    RollSpeed = 45
     
-    TiltOffset = 6
+    TiltOffset = 1
     
     AssistLift = 0
     
-    TurnSpeedMult = 0.45
+    TurnSpeedMult = 1
     VelDampingMult = 1
-    AngDamping = ang(40,30,15)
-    AngDampingMult = 1
+    AngDamping = ang(45,60,40)
+    AngDampingMult = 2
     
     DefaultThrottle = 70
     MaxThrottle = 100
     MinThrottle = 50
     
     CamPosFP = vec(0,-2,40)
-    CamPosTP = vec(-20,0,50)
+    CamPosTP = vec(-62.3,0,125)
     CamDistanceFP = 0
-    CamDistanceTP = 220
+    CamDistanceTP = 550
 }
+
+
