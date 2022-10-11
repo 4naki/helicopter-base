@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.8"
+        Version = "1.9"
         
         runOnHTTP(1)
         if(Link!=""){
@@ -161,13 +161,13 @@ if(first()){
     ]#
     
     #[-- Config -- ]#
-    #include "Naki's_Mini_Copter_Config"
+    #include "Bell_UH-1_Huey_Config"
     
     #-- Code starts here
     
     setName(HelicopterName)
     
-    Base:setMass(300)
+    Base:setMass(BaseWeight)
     LandingPad:setMass(150)
     
     Base:propDrag(0)
