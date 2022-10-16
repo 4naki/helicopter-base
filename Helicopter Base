@@ -456,14 +456,14 @@ if(!Land){
     DistOK=(TooClose==0&TooFar==0)
     if(DistOK){
         OutputX=-((clamp(Base:velL():x()*0.01,-1,1))*25)*(Ranger:distance()>Height_Too_Low)
-        if(RangerDist>Height_Too_Low*1){
-            if(RangerDist<Height_Too_Low*1.3){
-                OutputZ=-0.2
+        if(RangerDist>Height_Too_Low*0.75){
+            if(RangerDist<Height_Too_Low*1.5){
+                OutputZ=-0.16
             }else{
-                OutputZ=-0.1
+                OutputZ=-0.2
             }
         }else{
-            OutputZ=-0.1
+            OutputZ=-0.16
             timer("shutdown",100)
         }
     }else{
