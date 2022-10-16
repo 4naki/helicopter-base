@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "2.5"
+        Version = "2.6"
         
         #Used for development only!
         DevBranch=0
@@ -73,10 +73,16 @@ if(chatClk(owner())){
                     case "owner",
                         TargetEnt=owner()
                         TargetUseAimPos=0
+                        hint("Target set to "+TargetEnt:name(),7)
                     break
                     
                     case "aimpos",
-                        TargetUseAimPos=1
+                        TargetUseAimPos=!TargetUseAimPos
+                        if(TargetUseAimPos){
+                            hint("Select target area with mouse: Enabled",7)
+                        }else{
+                            hint("Select target area with mouse: Disabled",7)
+                        }
                     break
                     
                     case "player",
@@ -85,8 +91,9 @@ if(chatClk(owner())){
                             TargetFind=findPlayerByName(LS2[3,string])
                             if(TargetFind!=noentity()){
                                 TargetEnt=TargetFind
+                                hint("Target set to "+TargetEnt:name(),7)
                             }else{
-                                print("Could not find target entity.")
+                                hint("Could not find target entity.",7)
                             }
                         }
                     break
@@ -112,6 +119,15 @@ if(chatClk(owner())){
         
         case ".doorclose",
             timer("doorClose",100)
+        break
+        
+        case ".ai",
+            AI_On=!AI_On
+            if(AI_On){
+                hint("AI: Enabled",7)
+            }else{
+                hint("AI: Disabled",7)
+            }
         break
     }
 }
@@ -214,6 +230,7 @@ if(first()){
         
         Chat commands:
         
+        .ai toggle ai following commands
         .target <owner/aimpos/player> <player name>
         .land
         .takeoff
@@ -302,7 +319,9 @@ Pilot=Seat:driver()
 
 #-- Buttons/Controls
 
-
+if(changed(AI_On)){
+    holoAlpha(5,255*AI_On)
+}
 if(!AI_On){
     MouseAimButton=Pilot:keyPressed("g")*Active
     if(changed(MouseAimButton)&MouseAimButton){
@@ -461,6 +480,7 @@ CamAng4=((((Target-(vec(Stop_Distance*0.7,0,0):rotate(ang(0,A,0))))-vec(0,0,Rang
 
 if(clk("landstart")){
     Land=1
+    hint("Landing to target area.",7)
 }elseif(clk("takeoff")){
     Land=0
     Power=1
@@ -473,9 +493,11 @@ if(clk("landstart")){
 }
 if(clk("doorOpen")){
     DoorOpen=1
+    hint("Side doors open.",7)
 }
 if(clk("doorClose")){
     DoorOpen=0
+    hint("Side doors closed.",7)
 }
 if(TargetUseAimPos){
     if(changed(owner():keyAttack1())&owner():keyAttack1()){
