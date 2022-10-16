@@ -1,26 +1,31 @@
 @name Naki's Customizable Helicopter Base
 @inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
 @outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
-@persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60
+@persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60 DevBranch
 @trigger none
+
 #ifdef httpRequest(string)
 @persist [Version Link]:string Block
 #endif
-#runOnChat(1)
 if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "1.9"
+        Version = "2.0"
+        
+        #Used for development only!
+        DevBranch=1
         
         runOnHTTP(1)
         if(Link!=""){
         }else{
+            print("Link is empty!")
             Block=1
         }
         if(VersionCheckLink!=""){
             httpRequest(VersionCheckLink)
         }else{
+            print("VersionCheckLink is empty!")
             Block=1
         }
     #else
@@ -34,10 +39,21 @@ if(first()){
             
             print("["+entity():getName()+"]")
             
-            if(Version:toNumber()!=ReturnData:toNumber()){
-                print("Update available! Running version: "+Version)
-                print("Latest version: "+ReturnData)
-                print("Link: "+Link)
+            local V = Version:toNumber()
+            local RD = ReturnData:toNumber()
+            
+            if(V!=RD){
+                if(V>RD){
+                    if(DevBranch){
+                        print("Running Development Branch version: "+Version)
+                    }else{
+                        print("Running version ahead of current release! version: "+Version)
+                    }
+                }else{
+                    print("Update available! Running version: "+Version)
+                    print("Latest version: "+ReturnData)
+                    print("Link: "+Link)
+                }
             }else{
                 print("Up to date! Running version: "+Version)
             }
@@ -401,9 +417,9 @@ if(!Power){
 if(changed(Power)){
     if(Power){
         Base:soundPlay("rotor",0,RotorFX)
-        Base:soundPlay("power",0,"acf_extra/airfx/satellite_target.wav")
-        Base:soundPlay("switch",0,"buttons/lever7.wav")
-        Base:soundPlay("wind",0,"acf_extra/vehiclefx/misc/windexternal.wav")
+        Base:soundPlay("power",0,EngineStartFX)
+        Base:soundPlay("switch",0,PowerSwitchFX)
+        Base:soundPlay("wind",0,WindFX)
     }else{
         
     }
