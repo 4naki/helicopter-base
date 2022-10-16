@@ -429,14 +429,14 @@ RangerDistMin=Height_Min2
 
 
 if(Ranger:distance()<Height_Max2&Ranger:distance()>Height_Min2){
-    Space2=clamp(W2+S2,0,0.25)
+    Space2=clamp(W2+S2,0,1)*5
     Shift2=0
 }else{
     Space2=(Ranger:distance()<Height_Min2)
     Shift2=(Ranger:distance()>Height_Max2)
 }
 
-PitchAI=10*(W2-S2)*(Ranger:distance()>Height_Too_Low)
+PitchAI=8*(W2-S2)*(Ranger:distance()>Height_Too_Low)
 YawAI=TargetAng:yaw()
 
 W2=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))>Stop_Distance
@@ -447,8 +447,8 @@ FireSecondary=Pilot:keyAttack2()
 OutputY=((clamp((Base:velL():y()*0.005),-1,1))*25)
 if(!Land){
     
-    OutputZ=-(Shift2-Space2)*Power
-    OutputX=((W2-S2)*10)*(Ranger:distance()>Height_Too_Low)
+    OutputZ=-(Shift2-Space2)*Power*2
+    OutputX=((W2-S2)*8)*(Ranger:distance()>Height_Too_Low)
 }else{
     
     local TooClose=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))>Stop_Distance
@@ -457,14 +457,14 @@ if(!Land){
     if(DistOK){
         OutputX=-((clamp(Base:velL():x()*0.01,-1,1))*25)*(Ranger:distance()>Height_Too_Low)
         if(RangerDist>Height_Too_Low*1.1){
-            OutputZ=-0.5
+            OutputZ=-0.2
         }else{
-            OutputZ=-0.25
+            OutputZ=-0.2
             timer("shutdown",100)
         }
     }else{
-        OutputX=((W2-S2)*10)*(Ranger:distance()>Height_Too_Low)
-        OutputZ=-(Shift2-Space2)
+        OutputX=((W2-S2)*8)*(Ranger:distance()>Height_Too_Low)
+        OutputZ=-(Shift2-Space2)*2
     }
 }
 AH=1
