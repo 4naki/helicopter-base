@@ -22,7 +22,7 @@ if(first()){
     PowerSwitchFX = "buttons/lever7.wav"
     WindFX = "acf_extra/vehiclefx/misc/windexternal.wav"
     
-    BaseWeight = 500
+    BaseWeight = 514
     
     RealRPM = 324
     DefaultRPM = 70
@@ -35,7 +35,7 @@ if(first()){
     YawSpeed = 40
     RollSpeed = 45
     
-    TiltOffset = 1
+    TiltOffset = 2
     
     AssistLift = 0
     
@@ -44,17 +44,14 @@ if(first()){
     AngDamping = ang(45,75,40)
     AngDampingMult = 2
     
-    DefaultThrottle = 70
+    DefaultThrottle = 57
     MaxThrottle = 100
-    MinThrottle = 50
+    MinThrottle = 35
     
     CamPosFP = vec(0,-2,40)
     CamPosTP = vec(-62.3,0,125)
     CamDistanceFP = 0
     CamDistanceTP = 550
-    
-    
-    AI_On=1
     
     Stop_Distance=1500
     Too_Close_Distance=600
