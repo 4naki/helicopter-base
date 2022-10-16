@@ -1,7 +1,7 @@
 @name Naki's Customizable Helicopter Base
 @inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
-@outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH CamAng4:angle LightOn DoorOpen
-@persist MouseAim Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60 DevBranch A LightOn DoorOpen
+@outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH [CamAng4 AngMiniguns]:angle LightOn DoorOpen
+@persist MouseAim Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity DevBranch A LightOn DoorOpen
 @trigger none
 @persist TargetEnt:entity [Target Target2]:vector TargetUseAimPos Land
 #ifdef httpRequest(string)
@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "2.6"
+        Version = "2.8"
         
         #Used for development only!
         DevBranch=0
@@ -414,6 +414,8 @@ if(changed(Seat:driver():keyPressed("t"))&Seat:driver():keyPressed("t")){
 }
 
 CamAng4=CamAng
+AngMiniguns=ang(clamp(CamParent:toLocal(CamAng4):pitch(),-15,25),clamp(CamParent:toLocal(CamAng4):yaw(),-10,10),0)*Active
+
 }else{
 
 A+=0.5
@@ -428,7 +430,7 @@ RangerDistMin=Height_Min2
 
 
 if(Ranger:distance()<Height_Max2&Ranger:distance()>Height_Min2){
-    Space2=clamp(W2+S2,0,0.5)
+    Space2=clamp(W2+S2,0,0.25)
     Shift2=0
 }else{
     Space2=(Ranger:distance()<Height_Min2)
@@ -447,6 +449,7 @@ OutputY=((clamp((Base:velL():y()*0.005),-1,1))*25)
 if(!Land){
     
     OutputZ=-(Shift2-Space2)*Power
+    OutputX=((W2-S2)*10)*(Ranger:distance()>Height_Too_Low)
 }else{
     
     local TooClose=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))>Stop_Distance
@@ -476,7 +479,10 @@ if(DistOK){
     CamAng3=ang(PitchAI,YawAI,0)
 }
 
-CamAng4=((((Target-(vec(Stop_Distance*0.7,0,0):rotate(ang(0,A,0))))-vec(0,0,RangerDist-clamp((Target*vec(0,0,1)):distance(Base:pos()*vec(0,0,1)),0,9999)))+vec(165*sin(A*360),165*sin(A*360),0))-Base:pos()):toAngle()
+CamAng4=((((Target-(vec(Stop_Distance*0.7,0,0):rotate(ang(0,A,0))))-vec(0,0,RangerDist-clamp((Target*vec(0,0,1)):distance(Base:pos()*vec(0,0,1)),0,9999)))+vec(165*sin(A*360),165*sin(A*360),0))-Base:pos()):toAngle()*!Land
+Ang2=Base:toLocal(CamAng4)
+AngMiniguns=ang(clamp(Ang2:pitch(),-15,25),clamp(Ang2:yaw(),-10,10),0)*Active*!Land
+
 
 if(clk("landstart")){
     Land=1
@@ -579,7 +585,7 @@ if(!MouseAim){
     Ang=((Autohover*ang(0,0,1))+Tilt)*500
 }
 
-Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.1)*VelDampingMult
+Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.2)*VelDampingMult
 Damping2=(Base:angVel()*AngDamping*2)*AngDampingMult
 
 Vel=(Base:velL()/5)
@@ -609,8 +615,8 @@ ThrottleMult=0.5+(Throttle/95)
 holoAng(3,Base:toWorld((AutoStop+Tilt2)*ThrottleMult))
 holoAng(4,Base:toWorld((ang(JoyX,0,JoyY)*0.1)))
 
-Base:applyForce((((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))/(1+TPS60))
-Base:applyAngForce((((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))/(1+TPS60))
+Base:applyForce((((Damping+holoEntity(3):up()*RPM/100)*(Throttle/100))*(Base:mass()*(52+AssistLift)))/(1))
+Base:applyAngForce((((Ang*TurnSpeedMult)-Damping2)*((Base:mass()/25)*(RPM/100)))/(1))
 if(!Power){
     if(RotorBrake){
         LandingPad:setMass(150)
