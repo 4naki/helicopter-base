@@ -1,7 +1,7 @@
 @name Naki's Customizable Helicopter Base
 @inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
 @outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
-@persist Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60 DevBranch
+@persist MouseAim Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60 DevBranch
 @trigger none
 
 #ifdef httpRequest(string)
@@ -14,7 +14,7 @@ if(first()){
         Version = "2.0"
         
         #Used for development only!
-        DevBranch=1
+        DevBranch=0
         
         runOnHTTP(1)
         if(Link!=""){
