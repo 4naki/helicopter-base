@@ -1,9 +1,9 @@
 @name Naki's Customizable Helicopter Base
 @inputs [LandingPad Base Seat Rotor TailRotor]:entity CamAng:angle
-@outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH
-@persist MouseAim Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60 DevBranch
+@outputs Throttle JoyX JoyY Yaw Power RPMOut RotorBrake CamPos:vector CamDistance CamParent:entity AH CamAng4:angle LightOn DoorOpen
+@persist MouseAim Throttle Active Power Val Val2 RPM RotorBrake AH TP CamParent:entity TPS60 DevBranch A LightOn DoorOpen
 @trigger none
-
+@persist TargetEnt:entity [Target Target2]:vector TargetUseAimPos Land
 #ifdef httpRequest(string)
 @persist [Version Link]:string Block
 #endif
@@ -11,10 +11,10 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "2.0"
+        Version = "2.5"
         
         #Used for development only!
-        DevBranch=0
+        DevBranch=1
         
         runOnHTTP(1)
         if(Link!=""){
@@ -61,20 +61,64 @@ if(first()){
     }
 #endif
 
-LS = owner():lastSaid():explode(" ")
-
-if(changed(LS[1,string])&LS[1,string]=="!60"){
-    hideChat(1)
-    TPS60=1
-    hint("TPS set to 60",7)
-}elseif(changed(LS[1,string])&LS[1,string]=="!30"){
-    hideChat(1)
-    TPS60=0
-    hint("TPS set to 30",7)
+if(chatClk(owner())){
+    local LS = owner():lastSaid()
+    local LS2=LS:explode(" ")
+    hideChat(LS:explode("")[1,string]==".")
+    
+    switch(LS2[1,string]){
+        case ".target",
+            if(LS2:count()>=2){
+                switch(LS2[2,string]){
+                    case "owner",
+                        TargetEnt=owner()
+                        TargetUseAimPos=0
+                    break
+                    
+                    case "aimpos",
+                        TargetUseAimPos=1
+                    break
+                    
+                    case "player",
+                        if(LS2:count()==3){
+                            TargetUseAimPos=0
+                            TargetFind=findPlayerByName(LS2[3,string])
+                            if(TargetFind!=noentity()){
+                                TargetEnt=TargetFind
+                            }else{
+                                print("Could not find target entity.")
+                            }
+                        }
+                    break
+                }
+            }
+        break
+        
+        case ".land",
+            if(!Land){
+                timer("landstart",100)
+            }
+        break
+        
+        case ".takeoff",
+            if(!Land&!Power){
+                timer("takeoff",100)
+            }
+        break
+        
+        case ".dooropen",
+            timer("doorOpen",100)
+        break
+        
+        case ".doorclose",
+            timer("doorClose",100)
+        break
+    }
 }
-
 interval(50)
 if(first()){
+    
+    runOnChat(1)
     
     #[ -- Setup and Controls --
         
@@ -170,10 +214,9 @@ if(first()){
         
         Chat commands:
         
-        Experimental!
-        
-        !60 - Used for TPS value of 60, higher value means the e2 will run "faster" but this also means stuff like applyforce is twice as strong
-        !30 - Used for TPS value of 30, higher value means the e2 will run "faster" but this also means stuff like applyforce is twice as strong
+        .target <owner/aimpos/player> <player name>
+        .land
+        .takeoff
     ]#
     
     #[-- Config -- ]#
@@ -231,23 +274,47 @@ if(first()){
     holoParent(4,Base)
     holoAlpha(4,0)
     holoScale(4,vec(0.5))
+    
+    rangerFilter(array(Base,LandingPad))
+    rangerFilter(Base:children())
+    rangerPersist(1)
+    
+    
+    holoCreate(5)
+    holoPos(5,Seat:toWorld(vec(0,0,2.5)))
+    holoAng(5,Seat:toWorld(ang(0,90,0)))
+    holoParent(5,Seat)
+    
+    holoModel(5,"models/player/urban.mdl")
+    holoAnim(5,"sit")
+    holoAlpha(5,255*AI_On)
+    
+    if(AI_On){
+        #Power=1
+        #Active=1
+    }
+    Target2=Base:pos()
+    Target=Target2+(vec(Stop_Distance*0.7,0,0):rotate(ang(0,A,0)))
 }
 Pilot=Seat:driver()
 
 #-- Buttons/Controls
-MouseAimButton=Pilot:keyPressed("g")*Active
 
-if(changed(MouseAimButton)&MouseAimButton){
-    MouseAim=!MouseAim
-    if(MouseAim){
-        Seat:hintDriver("Mouse Controls: On",7)
-    }else{
-        Seat:hintDriver("Mouse Controls: Off",7)
+
+if(!AI_On){
+    MouseAimButton=Pilot:keyPressed("g")*Active
+    if(changed(MouseAimButton)&MouseAimButton){
+        MouseAim=!MouseAim
+        if(MouseAim){
+            Seat:hintDriver("Mouse Controls: On",7)
+        }else{
+            Seat:hintDriver("Mouse Controls: Off",7)
+        }
     }
-}
-if(!MouseAim){
-}else{
-}
+    if(!MouseAim){
+    }else{
+    }
+    
 FirePrimary=Pilot:keyAttack1()*Active
 FireSecondary=Pilot:keyAttack2()*Active
 OutputX=((Pilot:keyForward()-Pilot:keyBack())*25)*Active
@@ -259,7 +326,7 @@ Start=Pilot:keyReload()
 RotorBrakeButton=Pilot:keyWalk()
 AutoHoverButton=Pilot:keyPressed("f")
 
-#-- Code continues
+CamAng3=CamAng
 
 if(TP){
     CamPos=CamPosTP
@@ -289,6 +356,7 @@ if(changed(Start)&Start){
         Seat:hintDriver("Power: Off",7)
     }
 }
+
 if(changed(AutoHoverButton)&AutoHoverButton){
     AH=!AH
     if(AH){
@@ -305,6 +373,120 @@ if(changed(RotorBrakeButton)&RotorBrakeButton){
         Seat:hintDriver("Rotor Brake: Off",7)
     }
 }
+
+if(changed(Seat:driver():keyPressed("h"))&Seat:driver():keyPressed("h")){
+    LightOn=!LightOn
+    if(LightOn){
+        Seat:hintDriver("Spotlight: On",7)
+    }else{
+        Seat:hintDriver("Spotlight: Off",7)
+    }
+}
+
+if(changed(Seat:driver():keyPressed("t"))&Seat:driver():keyPressed("t")){
+    DoorOpen=!DoorOpen
+    if(DoorOpen){
+        Seat:hintDriver("Doors: Open",7)
+    }else{
+        Seat:hintDriver("Doors: Closed",7)
+    }
+}
+
+CamAng4=CamAng
+}else{
+
+A+=0.5
+Target=Target2+(vec((Stop_Distance*0.7)*!Land,0,0):rotate(ang(0,A,0)))
+
+TargetAng=(Target-Base:pos()):toAngle()
+
+Ranger=rangerOffsetHull(9999,Base:pos()+vec(0,0,0),vec(0,0,-1),vec(5))
+RangerDist=Ranger:distance()
+RangerDistMax=Height_Max2+clamp((Target*vec(0,0,1)):distance(Base:pos()*vec(0,0,1)),0,9999)
+RangerDistMin=Height_Min2
+
+
+if(Ranger:distance()<Height_Max2&Ranger:distance()>Height_Min2){
+    Space2=clamp(W2+S2,0,0.5)
+    Shift2=0
+}else{
+    Space2=(Ranger:distance()<Height_Min2)
+    Shift2=(Ranger:distance()>Height_Max2)
+}
+
+PitchAI=10*(W2-S2)*(Ranger:distance()>Height_Too_Low)
+YawAI=TargetAng:yaw()
+
+W2=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))>Stop_Distance
+S2=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))<Too_Close_Distance
+
+FirePrimary=Pilot:keyAttack1()
+FireSecondary=Pilot:keyAttack2()
+OutputY=((clamp((Base:velL():y()*0.005),-1,1))*25)
+if(!Land){
+    
+    OutputZ=-(Shift2-Space2)*Power
+}else{
+    
+    local TooClose=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))>Stop_Distance
+    local TooFar=(Base:pos()*vec(1,1,0)):distance((Target*vec(1,1,0)))<Too_Close_Distance
+    DistOK=(TooClose==0&TooFar==0)
+    if(DistOK){
+        OutputX=-((clamp(Base:velL():x()*0.01,-1,1))*25)*(Ranger:distance()>Height_Too_Low)
+        if(RangerDist>Height_Too_Low*1.1){
+            OutputZ=-0.5
+        }else{
+            OutputZ=-0.25
+            timer("shutdown",100)
+        }
+    }else{
+        OutputX=((W2-S2)*10)*(Ranger:distance()>Height_Too_Low)
+        OutputZ=-(Shift2-Space2)
+    }
+}
+AH=1
+RotorBrake=1
+LightOn=Power
+
+MouseAim=1
+if(DistOK){
+    CamAng3=ang(0,Base:angles():yaw(),0)
+}else{
+    CamAng3=ang(PitchAI,YawAI,0)
+}
+
+CamAng4=((((Target-(vec(Stop_Distance*0.7,0,0):rotate(ang(0,A,0))))-vec(0,0,RangerDist-clamp((Target*vec(0,0,1)):distance(Base:pos()*vec(0,0,1)),0,9999)))+vec(165*sin(A*360),165*sin(A*360),0))-Base:pos()):toAngle()
+
+if(clk("landstart")){
+    Land=1
+}elseif(clk("takeoff")){
+    Land=0
+    Power=1
+    Active=1
+}elseif(clk("shutdown")){
+    Land=0
+    Power=0
+    Active=0
+    timer("doorOpen",100)
+}
+if(clk("doorOpen")){
+    DoorOpen=1
+}
+if(clk("doorClose")){
+    DoorOpen=0
+}
+if(TargetUseAimPos){
+    if(changed(owner():keyAttack1())&owner():keyAttack1()){
+        Target2=owner():aimPos()
+    }
+}else{
+    if(!Land){
+        Target2=TargetEnt:pos()
+    }
+}
+}
+Seat:lockPod(AI_On)
+
 if(abs(OutputX)>2){
     if(OutputX<45){
         if(OutputX>-45){
@@ -369,7 +551,7 @@ if(!MouseAim){
         Ang=(Autohover+Recover)*100
     }
 }else{
-    Tilt=ang(0+JoyX*0.375,Yaw*1,JoyY*0.75)+(Base:toLocal(CamAng*ang(1,Power&Active,0))*ang(1,Power&Active,0))
+    Tilt=ang(0+JoyX*0.375,Yaw*1,JoyY*0.75)+(Base:toLocal(CamAng3*ang(1,Power&Active,0))*ang(1,Power&Active,0))
     Ang=((Autohover*ang(0,0,1))+Tilt)*500
 }
 
