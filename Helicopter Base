@@ -11,7 +11,7 @@ if(first()){
     #ifdef httpRequest(string)
         Link = "https://github.com/4naki/helicopter-base/blob/main/Helicopter%20Base"
         VersionCheckLink = "https://raw.githubusercontent.com/4naki/helicopter-base/main/Version"
-        Version = "2.8"
+        Version = "2.9"
         
         #Used for development only!
         DevBranch=0
@@ -123,6 +123,8 @@ if(chatClk(owner())){
         
         case ".ai",
             AI_On=!AI_On
+            Active=AI_On
+            holoAlpha(5,255*AI_On)
             if(AI_On){
                 hint("AI: Enabled",7)
             }else{
@@ -319,10 +321,6 @@ Pilot=Seat:driver()
 
 #-- Buttons/Controls
 
-if(changed(AI_On)){
-    holoAlpha(5,255*AI_On)
-    Active=1
-}
 if(!AI_On){
     MouseAimButton=Pilot:keyPressed("g")*Active
     if(changed(MouseAimButton)&MouseAimButton){
