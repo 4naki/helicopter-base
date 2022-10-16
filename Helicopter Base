@@ -321,6 +321,7 @@ Pilot=Seat:driver()
 
 if(changed(AI_On)){
     holoAlpha(5,255*AI_On)
+    Active=1
 }
 if(!AI_On){
     MouseAimButton=Pilot:keyPressed("g")*Active
