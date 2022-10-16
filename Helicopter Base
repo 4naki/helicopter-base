@@ -14,7 +14,7 @@ if(first()){
         Version = "2.5"
         
         #Used for development only!
-        DevBranch=1
+        DevBranch=0
         
         runOnHTTP(1)
         if(Link!=""){
