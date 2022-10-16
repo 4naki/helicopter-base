@@ -490,6 +490,7 @@ if(clk("landstart")){
     Land=0
     Power=1
     Active=1
+    timer("doorClose",100)
 }elseif(clk("shutdown")){
     Land=0
     Power=0
