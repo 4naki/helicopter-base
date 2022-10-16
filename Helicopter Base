@@ -584,7 +584,7 @@ if(!MouseAim){
     Ang=((Autohover*ang(0,0,1))+Tilt)*500
 }
 
-Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.01))*0.2)*VelDampingMult
+Damping=(-((Base:forward()*Base:velL():x()*0.001)+(-Base:right()*Base:velL():y()*0.001)+(Base:up()*Base:velL():z()*0.02))*0.1)*VelDampingMult
 Damping2=(Base:angVel()*AngDamping*2)*AngDampingMult
 
 Vel=(Base:velL()/5)
@@ -675,3 +675,4 @@ RPMOut=RealRPM*(RPM/100)
 if(dupefinished()){
     reset()
 }
+
